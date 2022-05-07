@@ -156,14 +156,10 @@ namespace Tetris
 
         public int BlockDropDistance()
         {
-            int drop = GameGrid.Rows;
-
-            foreach (Position p in CurrentBlock.TilePositions())
-            {
-                drop = System.Math.Min(drop, TileDropDistance(p));
-            }
-
-            return drop;
+            return CurrentBlock.TilePositions()
+                               .Aggregate(GameGrid.Rows, 
+                                   (current, p) => 
+                                       System.Math.Min(current, TileDropDistance(p)));
         }
 
         public void DropBlock()
