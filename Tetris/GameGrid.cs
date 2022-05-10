@@ -1,4 +1,7 @@
-﻿namespace Tetris
+﻿using System.Linq;
+using static System.Linq.Enumerable;
+
+namespace Tetris
 {
     public class GameGrid
     {
@@ -12,14 +15,10 @@
             set => grid[r, c] = value;
         }
 
-        public GameGrid(int rows, int columns)
-        {
-            Rows = rows;
-            Columns = columns;
-            grid = new int[rows, columns];
-        }
+        public GameGrid(int rows, int columns) => 
+            (Rows, Columns, grid) = (rows, columns, new int[rows, columns]);
 
-        public bool IsInside(int r, int c)
+        private bool IsInside(int r, int c)
         {
             return r >= 0 && r < Rows && c >= 0 && c < Columns;
         }
@@ -28,32 +27,11 @@
         {
             return IsInside(r, c) && grid[r, c] == 0;
         }
+        
 
-        public bool IsRowFull(int r)
-        {
-            for (int c = 0; c < Columns; c++)
-            {
-                if (grid[r, c] == 0)
-                {
-                    return false;
-                }
-            }
+        public bool IsRowFull(int r) => Range(0, Columns).All(c => grid[r, c] != 0);
 
-            return true;
-        }
-
-        public bool IsRowEmpty(int r)
-        {
-            for (int c = 0; c < Columns; c++)
-            {
-                if (grid[r, c] != 0)
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
+        public bool IsRowEmpty(int r) => Range(0, Columns).All(c => grid[r, c] == 0);
 
         private void ClearRow(int r)
         {

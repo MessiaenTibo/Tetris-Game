@@ -1,27 +1,29 @@
 ﻿using System;
+using System.Linq;
+using System.Reflection;
 
 namespace Tetris
 {
     public class BlockQueue
     {
-        private readonly Block[] blocks = new Block[]
-        {
-            new IBlock(),
-            new JBlock(),
-            new LBlock(),
-            new OBlock(),
-            new SBlock(),
-            new TBlock(),
-            new ZBlock()
-        };
-
+        private  Block[] blocks;
         private readonly Random random = new Random();
 
         public Block NextBlock { get; private set; }
 
         public BlockQueue()
         {
+            PopulateBlocks();
             NextBlock = RandomBlock();
+        }
+
+        private void PopulateBlocks()
+        {
+            var currentAssembly = Assembly.GetExecutingAssembly();
+            var types = currentAssembly.GetTypes();
+            blocks = types
+                .Where(t => !t.IsAbstract && t.IsAssignableTo(typeof(Block)))
+                .Select(Activator.CreateInstance).Cast<Block>().ToArray();
         }
 
         private Block RandomBlock()

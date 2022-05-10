@@ -1,4 +1,6 @@
-﻿namespace Tetris
+﻿using System.Linq;
+
+namespace Tetris
 {
     public class GameState
     {
@@ -41,15 +43,7 @@
 
         private bool BlockFits()
         {
-            foreach (Position p in CurrentBlock.TilePositions())
-            {
-                if (!GameGrid.IsEmpty(p.Row, p.Column))
-                {
-                    return false;
-                }
-            }
-
-            return true;
+            return CurrentBlock.TilePositions().All(p => GameGrid.IsEmpty(p.Row, p.Column));
         }
 
         public void HoldBlock()
@@ -66,9 +60,7 @@
             }
             else
             {
-                Block tmp = CurrentBlock;
-                CurrentBlock = HeldBlock;
-                HeldBlock = tmp;
+                (CurrentBlock, HeldBlock) = (HeldBlock, CurrentBlock);
             }
 
             CanHold = false;
@@ -164,14 +156,10 @@
 
         public int BlockDropDistance()
         {
-            int drop = GameGrid.Rows;
-
-            foreach (Position p in CurrentBlock.TilePositions())
-            {
-                drop = System.Math.Min(drop, TileDropDistance(p));
-            }
-
-            return drop;
+            return CurrentBlock.TilePositions()
+                               .Aggregate(GameGrid.Rows, 
+                                   (current, p) => 
+                                       System.Math.Min(current, TileDropDistance(p)));
         }
 
         public void DropBlock()
