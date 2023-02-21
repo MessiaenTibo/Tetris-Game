@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -12,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 
 namespace Tetris
 {
@@ -49,11 +51,23 @@ namespace Tetris
         private readonly int minDelay = 75;
         private readonly int delayDecrease = 25;
 
+        DispatcherTimer leftOrRightMovementTimer = new System.Windows.Threading.DispatcherTimer();
+        private bool leftOrRightMovementTimerIsRunning = false;
+        private int leftOrRightMovementTimerCounter = 0;
+
+
         private GameState gameState = new GameState();
 
         public MainWindow()
         {
             InitializeComponent();
+
+
+            //timer
+            leftOrRightMovementTimer.Tick += leftRightTimer;
+            leftOrRightMovementTimer.Interval = new TimeSpan(0, 0, 0, 0, 200);
+
+
             imageControls = SetupGameCanvas(gameState.GameGrid);
         }
 
@@ -161,39 +175,82 @@ namespace Tetris
 
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
+            Console.WriteLine(e.Key + " pressed");
             if (gameState.GameOver)
             {
                 return;
             }
 
-            switch (e.Key)
+            if(e.Key == Key.Left || e.Key == Key.Right || e.Key == Key.Down)
             {
-                case Key.Left:
-                    gameState.MoveBlockLeft();
-                    break;
-                case Key.Right:
-                    gameState.MoveBlockRight();
-                    break;
-                case Key.Down:
-                    gameState.MoveBlockDown();
-                    break;
-                case Key.Up:
-                    gameState.RotateBlockCW();
-                    break;
-                case Key.Z:
-                    gameState.RotateBlockCCW();
-                    break;
-                case Key.C:
-                    gameState.HoldBlock();
-                    break;
-                case Key.Space:
-                    gameState.DropBlock();
-                    break;
-                default:
+                if (leftOrRightMovementTimerIsRunning)
+                {
                     return;
+                }
+                else
+                {
+                    leftRightTimer(sender, e);
+                    leftOrRightMovementTimerIsRunning = true;
+                    leftOrRightMovementTimer.Start();
+                }
+            }
+            else if(e.Key == Key.Up)
+            {
+                gameState.RotateBlockCW();
+                Draw(gameState);
+            }
+            else if(e.Key == Key.Z)
+            {
+                gameState.RotateBlockCCW();
+                Draw(gameState);
+            }
+            else if(e.Key == Key.LeftShift)
+            {
+                gameState.HoldBlock();
+                Draw(gameState);
+            }
+            else if(e.Key == Key.Space)
+            {
+                gameState.DropBlock();
+                Draw(gameState);
             }
 
+
+            
+        }
+
+
+        private void leftRightTimer(object sender, EventArgs e)
+        {
+            leftOrRightMovementTimerCounter++;
+            if(leftOrRightMovementTimerCounter * 50 < 200)
+            {
+                leftOrRightMovementTimer.Interval = new TimeSpan(0, 0, 0, 0, 180) - new TimeSpan(0, 0, 0, 0, 50 * leftOrRightMovementTimerCounter);
+            }
+            Console.WriteLine(leftOrRightMovementTimer.Interval);
+            Console.WriteLine(DateTime.Now);
+            // if the key is still down, move the block
+            if(Keyboard.IsKeyDown(Key.Left))
+            {
+                gameState.MoveBlockLeft();
+            }
+            else if(Keyboard.IsKeyDown(Key.Right))
+            {
+                gameState.MoveBlockRight();
+            }
+            else if(Keyboard.IsKeyDown(Key.Down))
+            {
+                gameState.MoveBlockDown();
+            }
+            else
+            {
+                leftOrRightMovementTimerIsRunning = false;
+                leftOrRightMovementTimerCounter = 0;
+                leftOrRightMovementTimer.Interval = new TimeSpan(0, 0, 0, 0, 200);
+                leftOrRightMovementTimer.Stop();
+            }
             Draw(gameState);
+
         }
 
         private async void GameCanvas_Loaded(object sender, RoutedEventArgs e)
@@ -207,5 +264,6 @@ namespace Tetris
             GameOverMenu.Visibility = Visibility.Hidden;
             await GameLoop();
         }
+
     }
 }
