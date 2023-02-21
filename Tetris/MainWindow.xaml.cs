@@ -163,7 +163,10 @@ namespace Tetris
 
             while (!gameState.GameOver)
             {
-                int delay = Math.Max(minDelay, maxDelay - (gameState.Score * delayDecrease));
+                // int delay = Math.Max(minDelay, maxDelay - (gameState.Score * delayDecrease)); // linear (37 lines = mindelay)
+                int delay = (int)Math.Max(minDelay, maxDelay - (Math.Log10(gameState.Score + 1) * 16 * delayDecrease)); // logarithmic (200 lines = mindelay)
+
+
                 await Task.Delay(delay);
                 gameState.MoveBlockDown();
                 Draw(gameState);
@@ -175,7 +178,6 @@ namespace Tetris
 
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
-            Console.WriteLine(e.Key + " pressed");
             if (gameState.GameOver)
             {
                 return;
@@ -227,8 +229,6 @@ namespace Tetris
             {
                 leftOrRightMovementTimer.Interval = new TimeSpan(0, 0, 0, 0, 180) - new TimeSpan(0, 0, 0, 0, 50 * leftOrRightMovementTimerCounter);
             }
-            Console.WriteLine(leftOrRightMovementTimer.Interval);
-            Console.WriteLine(DateTime.Now);
             // if the key is still down, move the block
             if(Keyboard.IsKeyDown(Key.Left))
             {

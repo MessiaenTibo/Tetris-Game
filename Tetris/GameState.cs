@@ -30,6 +30,9 @@
         public int Score { get; private set; }
         public Block HeldBlock { get; private set; }
         public bool CanHold { get; private set; }
+        public int delayBeforePlace { get; set; }
+        public int delayBeforePlaceCounter { get; set; }
+        public bool delayBeforePlaceStarted { get; set; }
 
         public GameState()
         {
@@ -37,6 +40,9 @@
             BlockQueue = new BlockQueue();
             CurrentBlock = BlockQueue.GetAndUpdate();
             CanHold = true;
+            delayBeforePlace = 1; // Delay before the block is permanently placed, you can still move it a little bit around.
+            delayBeforePlaceCounter = 0;
+            delayBeforePlaceStarted = false;
         }
 
         private bool BlockFits()
@@ -72,6 +78,9 @@
             }
 
             CanHold = false;
+
+            // reset possible delay before place
+            delayBeforePlace = 1;
         }
 
         public void RotateBlockCW()
@@ -81,6 +90,10 @@
             if (!BlockFits())
             {
                 CurrentBlock.RotateCCW();
+            }
+            else{
+                // If the block is on the bottem and you move it the place delay gets bigger.
+                if (delayBeforePlaceStarted){ AddDelayBeforePlace(); }
             }
         }
 
@@ -92,6 +105,10 @@
             {
                 CurrentBlock.RotateCW();
             }
+            else{
+                // If the block is on the bottem and you move it the place delay gets bigger.
+                if (delayBeforePlaceStarted){ AddDelayBeforePlace();}
+            }
         }
 
         public void MoveBlockLeft()
@@ -102,15 +119,24 @@
             {
                 CurrentBlock.Move(0, 1);
             }
+            else{
+                // If the block is on the bottem and you move it the place delay gets bigger.
+                if (delayBeforePlaceStarted){ AddDelayBeforePlace();}
+            }
         }
 
         public void MoveBlockRight()
         {
             CurrentBlock.Move(0, 1);
 
+
             if (!BlockFits())
             {
                 CurrentBlock.Move(0, -1);
+            }
+            else{
+                // If the block is on the bottem and you move it the place delay gets bigger.
+                if (delayBeforePlaceStarted){ AddDelayBeforePlace();}
             }
         }
 
@@ -146,7 +172,18 @@
             if (!BlockFits())
             {
                 CurrentBlock.Move(-1, 0);
-                PlaceBlock();
+                delayBeforePlaceStarted = true;
+                if(delayBeforePlaceCounter >= delayBeforePlace)
+                {
+                    PlaceBlock();
+                    delayBeforePlaceCounter = 0;
+                    delayBeforePlace = 1;
+                    delayBeforePlaceStarted = false;
+                }
+                else
+                {
+                    delayBeforePlaceCounter++;
+                }
             }
         }
 
@@ -178,6 +215,14 @@
         {
             CurrentBlock.Move(BlockDropDistance(), 0);
             PlaceBlock();
+        }
+
+        public void AddDelayBeforePlace()
+        {
+            if(delayBeforePlace <= 3)
+            {
+                delayBeforePlace += 1;
+            }
         }
     }
 }
