@@ -9,6 +9,10 @@
 
   <ItemGroup>
     <None Remove="Assets\Background.png" />
+    <None Remove="Assets\BackgroundRed.png" />
+    <None Remove="Assets\BackgroundBlue.png" />
+    <None Remove="Assets\BackgroundCyan.png" />
+    <None Remove="Assets\BackgroundGreen.png" />
     <None Remove="Assets\Block-Empty.png" />
     <None Remove="Assets\Block-I.png" />
     <None Remove="Assets\Block-J.png" />
@@ -30,6 +34,10 @@
 
   <ItemGroup>
     <Resource Include="Assets\Background.png" />
+    <Resource Include="Assets\BackgroundRed.png" />
+    <Resource Include="Assets\BackgroundBlue.png" />
+    <Resource Include="Assets\BackgroundCyan.png" />
+    <Resource Include="Assets\BackgroundGreen.png" />
     <Resource Include="Assets\Block-Empty.png" />
     <Resource Include="Assets\Block-I.png" />
     <Resource Include="Assets\Block-J.png" />
