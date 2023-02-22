@@ -183,7 +183,7 @@ namespace Tetris
                 return;
             }
 
-            if(e.Key == Key.Left || e.Key == Key.Right || e.Key == Key.Down)
+            if (e.Key == Key.Left || e.Key == Key.Right || e.Key == Key.Down)
             {
                 if (leftOrRightMovementTimerIsRunning)
                 {
@@ -196,49 +196,49 @@ namespace Tetris
                     leftOrRightMovementTimer.Start();
                 }
             }
-            else if(e.Key == Key.Up)
+            else if (e.Key == Key.Up)
             {
                 gameState.RotateBlockCW();
                 Draw(gameState);
             }
-            else if(e.Key == Key.Z)
+            else if (e.Key == Key.Z)
             {
                 gameState.RotateBlockCCW();
                 Draw(gameState);
             }
-            else if(e.Key == Key.LeftShift)
+            else if (e.Key == Key.LeftShift)
             {
                 gameState.HoldBlock();
                 Draw(gameState);
             }
-            else if(e.Key == Key.Space)
+            else if (e.Key == Key.Space)
             {
                 gameState.DropBlock();
                 Draw(gameState);
             }
 
 
-            
+
         }
 
 
         private void leftRightTimer(object sender, EventArgs e)
         {
             leftOrRightMovementTimerCounter++;
-            if(leftOrRightMovementTimerCounter * 50 < 200)
+            if (leftOrRightMovementTimerCounter * 50 < 200)
             {
                 leftOrRightMovementTimer.Interval = new TimeSpan(0, 0, 0, 0, 180) - new TimeSpan(0, 0, 0, 0, 50 * leftOrRightMovementTimerCounter);
             }
             // if the key is still down, move the block
-            if(Keyboard.IsKeyDown(Key.Left))
+            if (Keyboard.IsKeyDown(Key.Left))
             {
                 gameState.MoveBlockLeft();
             }
-            else if(Keyboard.IsKeyDown(Key.Right))
+            else if (Keyboard.IsKeyDown(Key.Right))
             {
                 gameState.MoveBlockRight();
             }
-            else if(Keyboard.IsKeyDown(Key.Down))
+            else if (Keyboard.IsKeyDown(Key.Down))
             {
                 gameState.MoveBlockDown();
             }
@@ -263,6 +263,11 @@ namespace Tetris
             gameState = new GameState();
             GameOverMenu.Visibility = Visibility.Hidden;
             await GameLoop();
+        }
+
+        private async void Continue_Click(object sender, RoutedEventArgs e)
+        {
+
         }
 
     }

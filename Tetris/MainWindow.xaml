@@ -91,5 +91,24 @@
                         Click="PlayAgain_Click"/>
             </StackPanel>
         </Grid>
+
+        <Grid x:Name="PauseMenu"
+            Background="#CC000000"
+            Grid.RowSpan="2"
+            Grid.ColumnSpan="3"
+            Visibility="Hidden">
+            <StackPanel HorizontalAlignment="Center"
+                        VerticalAlignment="Center">
+                <TextBlock Text="Pause"
+                           FontSize="48"
+                           TextAlignment="Center"/>
+
+                <Button Content="Continue"
+                        Background="LightGreen"
+                        Margin="0,20,0,0"
+                        Padding="5"
+                        Click="Continue_Click"/>
+            </StackPanel>
+        </Grid>
     </Grid>
 </Window>
